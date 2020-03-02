@@ -366,6 +366,14 @@ function thold_upgrade_database () {
 			ADD COLUMN `suggested_name` varchar(255) NOT NULL default '' AFTER `name`");
 	}
 
+	if (!db_column_exists('plugin_thold_daemon_processes', 'added')) {
+		db_execute("ALTER TABLE plugin_thold_daemon_processes
+			ADD COLUMN added timestamp NOT NULL default CURRENT_TIMESTAMP,
+			MODIFY COLUMN start double default NULL,
+			MODIFY COLUMN end double default NULL
+			");
+	}
+
 	db_execute('UPDATE settings SET value = "' . $v['version'] . '" WHERE name = "plugin_thold_version"');
 	db_execute('UPDATE plugin_config SET version = "' . $v['version'] . '" WHERE directory = "thold"');
 }
@@ -603,8 +611,9 @@ function thold_setup_database () {
 	$data = array();
 	$data['columns'][] = array('name' => 'poller_id', 'type' => 'int(10)', 'unsigned' => true, 'NULL' => false, 'default' => '1');
 	$data['columns'][] = array('name' => 'pid', 'type' => 'varchar(25)', 'NULL' => false);
-	$data['columns'][] = array('name' => 'start', 'type' => 'double', 'NULL' => false, 'default' => '0');
-	$data['columns'][] = array('name' => 'end', 'type' => 'double', 'NULL' => false, 'default' => '0');
+	$data['columns'][] = array('name' => 'added', 'type' => 'timestamp', 'NULL' => false, 'default' => 'CURRENT_TIMESTAMP');
+	$data['columns'][] = array('name' => 'start', 'type' => 'double', 'NULL' => true);
+	$data['columns'][] = array('name' => 'end', 'type' => 'double', 'NULL' => true);
 	$data['columns'][] = array('name' => 'processed_items', 'type' => 'mediumint(8)', 'NULL' => false, 'default' => '0');
 
 	$data['primary']   = 'pid';
