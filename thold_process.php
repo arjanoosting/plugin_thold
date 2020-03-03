@@ -91,7 +91,6 @@ if (sizeof($parms)) {
 			case '-pid':
 			case '--pid':
 				$pid = $value;
-
 				break;
 			case '-v':
 			case '--version':
@@ -112,20 +111,19 @@ if (sizeof($parms)) {
 }
 
 // Record start time for the pid's processing
-$start = microtime(true);
 
 if ($pid === false) {
 	display_help();
 } elseif (read_config_option('remote_storage_method') == 1) {
 	db_execute_prepared('UPDATE plugin_thold_daemon_processes
-		SET start = ?
+		SET start = UNIX_TIMESTAMP(NOW(4))
 		WHERE pid = ? AND poller_id = ?',
-		array($start, $pid, $config['poller_id']));
+		array($pid, $config['poller_id']));
 } else {
 	db_execute_prepared('UPDATE plugin_thold_daemon_processes
-		SET start = ?
+		SET start = UNIX_TIMESTAMP(NOW(4))
 		WHERE pid = ?',
-		array($start, $pid));
+		array($pid));
 }
 
 // Fix issues with microtime skew
@@ -279,8 +277,6 @@ if (sizeof($tholds)) {
 		array($pid)
 	);
 
-	$end = microtime(true);
-
 	if (read_config_option('remote_storage_method') == 1) {
 		db_execute_prepared('DELETE FROM plugin_thold_daemon_data
 			WHERE pid = ?
@@ -288,19 +284,19 @@ if (sizeof($tholds)) {
 			array($pid, $config['poller_id']));
 
 		db_execute_prepared('UPDATE plugin_thold_daemon_processes
-			SET start = ?, end = ?, processed_items = ?
+			SET end = UNIX_TIMESTAMP(NOW(4)), processed_items = ?
 			WHERE pid = ?
 			AND poller_id = ?',
-			array($start, $end, $total_tholds, $pid, $config['poller_id']));
+			array($total_tholds, $pid, $config['poller_id']));
 	} else {
 		db_execute_prepared('DELETE FROM plugin_thold_daemon_data
 			WHERE pid = ?',
 			array($pid));
 
 		db_execute_prepared('UPDATE plugin_thold_daemon_processes
-			SET start = ?, end = ?, processed_items = ?
+			SET end = UNIX_TIMESTAMP(NOW(4)), processed_items = ?
 			WHERE pid = ?',
-			array($start, $end, $total_tholds, $pid));
+			array($total_tholds, $pid));
 	}
 }
 
