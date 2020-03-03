@@ -119,10 +119,13 @@ function thold_poller_bottom() {
 
 			/* system clean up */
 			db_execute_prepared('DELETE FROM plugin_thold_daemon_processes
-				WHERE end > 0
-				AND end <= ?
+				WHERE (
+					(end > 0 AND end <= ?)
+					OR
+					(added <= FROM_UNIXTIME(?) AND end IS NULL)
+				)
 				AND poller_id = ?',
-				array($now, $config['poller_id']));
+				array($now, $now - 600, $config['poller_id']));
 
 			/* host_status processed by thold server */
 			$nhosts = thold_update_host_status();
@@ -171,7 +174,7 @@ function thold_poller_bottom() {
 			/* system clean up */
 			db_execute_prepared('DELETE FROM plugin_thold_daemon_processes
 				WHERE (end > 0 AND end <= ?)
-				OR (start <= ? AND end = 0)',
+				OR (added <= FROM_UNIXTIME(?) AND end IS NULL)',
 				array($now, $now - 600));
 
 			db_execute_prepared('DELETE FROM plugin_thold_daemon_data
