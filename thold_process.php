@@ -90,15 +90,7 @@ if (sizeof($parms)) {
 				break;
 			case '-pid':
 			case '--pid':
-				$parts = explode('.', $value);
-
-				if (isset($parts[0]) && isset($parts[1]) && is_numeric($parts[0]) && is_numeric($parts[1])) {
-					$pid = $value;
-				}else {
-					print 'ERROR: Invalid Process ID ' . $arg . "\n\n";
-					display_help();
-					exit;
-				}
+				$pid = $value;
 
 				break;
 			case '-v':
