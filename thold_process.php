@@ -116,12 +116,12 @@ if ($pid === false) {
 	display_help();
 } elseif (read_config_option('remote_storage_method') == 1) {
 	db_execute_prepared('UPDATE plugin_thold_daemon_processes
-		SET start = UNIX_TIMESTAMP(NOW(4))
+		SET start = NOW(4)
 		WHERE pid = ? AND poller_id = ?',
 		array($pid, $config['poller_id']));
 } else {
 	db_execute_prepared('UPDATE plugin_thold_daemon_processes
-		SET start = UNIX_TIMESTAMP(NOW(4))
+		SET start = NOW(4)
 		WHERE pid = ?',
 		array($pid));
 }
@@ -284,7 +284,7 @@ if (sizeof($tholds)) {
 			array($pid, $config['poller_id']));
 
 		db_execute_prepared('UPDATE plugin_thold_daemon_processes
-			SET end = UNIX_TIMESTAMP(NOW(4)), processed_items = ?
+			SET end = NOW(4), processed_items = ?
 			WHERE pid = ?
 			AND poller_id = ?',
 			array($total_tholds, $pid, $config['poller_id']));
@@ -294,7 +294,7 @@ if (sizeof($tholds)) {
 			array($pid));
 
 		db_execute_prepared('UPDATE plugin_thold_daemon_processes
-			SET end = UNIX_TIMESTAMP(NOW(4)), processed_items = ?
+			SET end = NOW(4), processed_items = ?
 			WHERE pid = ?',
 			array($total_tholds, $pid));
 	}

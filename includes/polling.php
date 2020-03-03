@@ -99,7 +99,7 @@ function thold_poller_bottom() {
 				FROM plugin_thold_daemon_processes
 				WHERE start > 0
 				AND end > 0
-				AND end <= ?
+				AND end <= FROM_UNIXTIME(?)
 				AND poller_id = ?
 				AND processed_items != -1',
 				array($now, $config['poller_id']));
@@ -120,9 +120,9 @@ function thold_poller_bottom() {
 			/* system clean up */
 			db_execute_prepared('DELETE FROM plugin_thold_daemon_processes
 				WHERE (
-					(end > 0 AND end <= ?)
+					(end > 0 AND end <= FROM_UNIXTIME(?))
 					OR
-					(added <= FROM_UNIXTIME(?) AND end IS NULL)
+					(added <= FROM_UNIXTIME(?) AND end = 0)
 				)
 				AND poller_id = ?',
 				array($now, $now - 600, $config['poller_id']));
@@ -158,7 +158,7 @@ function thold_poller_bottom() {
 				FROM plugin_thold_daemon_processes
 				WHERE start > 0
 				AND end > 0
-				AND end <= ?
+				AND end <= FROM_UNIXTIME(?)
 				AND processed_items != -1',
 				array($now));
 
@@ -173,8 +173,8 @@ function thold_poller_bottom() {
 
 			/* system clean up */
 			db_execute_prepared('DELETE FROM plugin_thold_daemon_processes
-				WHERE (end > 0 AND end <= ?)
-				OR (added <= FROM_UNIXTIME(?) AND end IS NULL)',
+				WHERE (end > 0 AND end <= FROM_UNIXTIME(?))
+				OR (added <= FROM_UNIXTIME(?) AND end = 0)',
 				array($now, $now - 600));
 
 			db_execute_prepared('DELETE FROM plugin_thold_daemon_data

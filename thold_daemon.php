@@ -254,14 +254,14 @@ while (true) {
 		if (read_config_option('remote_storage_method') == 1) {
 			$queue = db_fetch_assoc_prepared('SELECT *
 				FROM plugin_thold_daemon_processes
-				WHERE start IS NULL
+				WHERE start = 0
 				AND poller_id = ?
 				ORDER BY added',
 				array($config['poller_id']));
 		} else {
 			$queue = db_fetch_assoc('SELECT *
 				FROM plugin_thold_daemon_processes
-				WHERE start IS NULL
+				WHERE start = 0
 				ORDER BY added');
 		}
 
@@ -276,14 +276,14 @@ while (true) {
 				$running_processes = db_fetch_cell_prepared('SELECT COUNT(*)
 					FROM plugin_thold_daemon_processes
 					WHERE start > 0
-					AND end IS NULL
+					AND end = 0
 					AND poller_id = ?',
 					array($config['poller_id']));
 			} else {
 				$running_processes = db_fetch_cell('SELECT COUNT(*)
 					FROM plugin_thold_daemon_processes
 					WHERE start > 0
-					AND end IS NULL');
+					AND end = 0');
 			}
 
 			thold_debug('Processes Running: ' . $running_processes);
@@ -299,9 +299,9 @@ while (true) {
 
 					/* mark the pid as started from here */
 					db_execute_prepared('UPDATE plugin_thold_daemon_processes 
-						SET start = ? 
+						SET start = NOW(4)
 						WHERE pid = ?', 
-						array(microtime(true), $pid));
+						array($pid));
 
 					$process = '-q ' . $config['base_path'] . '/plugins/thold/thold_process.php --pid=' . $pid . ' > /dev/null';
 

@@ -368,9 +368,9 @@ function thold_upgrade_database () {
 
 	if (!db_column_exists('plugin_thold_daemon_processes', 'added')) {
 		db_execute("ALTER TABLE plugin_thold_daemon_processes
-			ADD COLUMN added timestamp NOT NULL default CURRENT_TIMESTAMP,
-			MODIFY COLUMN start double default NULL,
-			MODIFY COLUMN end double default NULL
+			ADD COLUMN added timestamp(0) NOT NULL default CURRENT_TIMESTAMP,
+			MODIFY COLUMN start timestamp(4) default '0000-00-00 00:00:00.0000',
+			MODIFY COLUMN end timestamp(4) default '0000-00-00 00:00:00.0000'
 			");
 	}
 
