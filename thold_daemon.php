@@ -256,13 +256,13 @@ while (true) {
 				FROM plugin_thold_daemon_processes
 				WHERE start IS NULL
 				AND poller_id = ?
-				ORDER BY pid',
+				ORDER BY added',
 				array($config['poller_id']));
 		} else {
 			$queue = db_fetch_assoc('SELECT *
 				FROM plugin_thold_daemon_processes
 				WHERE start IS NULL
-				ORDER BY pid');
+				ORDER BY added');
 		}
 
 		$queued_processes = sizeof($queue);

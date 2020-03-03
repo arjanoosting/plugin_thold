@@ -276,7 +276,7 @@ function thold_poller_output(&$rrd_update_array) {
 				}
 
 				/* assign a new process id */
-				$thold_pid = microtime(true);
+				$thold_pid = uniqid('', true);
 
 				if ($local_data_ids != '') {
 					$thold_items = db_fetch_assoc("SELECT id, local_data_id
