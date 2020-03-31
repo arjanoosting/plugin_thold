@@ -24,6 +24,8 @@
 
 $thold_log_retention = array(
 	'-1'  => __('Indefinitely', 'thold'),
+	'7'   => __('%d Week', 1, 'thold'),
+	'14'  => __('%d Weeks', 2, 'thold'),
 	'31'  => __('%d Month', 1, 'thold'),
 	'62'  => __('%d Months', 2, 'thold'),
 	'93'  => __('%d Months', 3, 'thold'),
