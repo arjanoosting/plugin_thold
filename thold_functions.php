@@ -5845,13 +5845,6 @@ function thold_prune_old_data() {
 		ON pthf.host_id = h.id
 		WHERE h.id IS NULL');
 
-	// Remove log entries from removed devices
-	db_execute('DELETE ptl
-		FROM plugin_thold_log AS ptl
-		LEFT JOIN host AS h
-		ON ptl.host_id = h.id
-		WHERE h.id IS NULL');
-
 	// Remove threashols from removed devices
 	db_execute('DELETE td
 		FROM thold_data AS td
@@ -5865,6 +5858,14 @@ function thold_prune_old_data() {
 		LEFT JOIN graph_local AS gl
 		ON td.local_graph_id = gl.id
 		WHERE gl.id IS NULL');
+
+	// Remove log entries from thresholds (doing this in small batches as this runs in the poller run)
+	db_execute('DELETE FROM plugin_thold_log
+		WHERE NOT EXISTS (
+			SELECT id FROM thold_data
+			WHERE thold_data.id = plugin_thold_log.threshold_id)
+		ORDER BY time LIMIT 1000');
+
 }
 
 function thold_get_allowed_devices($sql_where = '', $order_by = 'description', $limit = '', &$total_rows = 0, $user = 0, $host_id = 0) {
